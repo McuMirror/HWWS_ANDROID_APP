@@ -3,7 +3,7 @@
 // Projekt:          Hochwasser-Warnsystem
 // Compiler:         -
 // Hersteller:       -
-// Autor:            Stefan Wögerbauer
+// Autor:            Stefan W.
 // Filename:         logindialog.cpp
 // Zweck:            login
 //

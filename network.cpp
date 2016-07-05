@@ -3,7 +3,7 @@
 // Projekt:          Hochwasser-Warnsystem
 // Compiler:         -
 // Hersteller:       -
-// Autor:            Stefan Wögerbauer
+// Autor:            Stefan W.
 // Filename:         network.cpp
 // Zweck:            Klasse: Daten aus dem Internet herunterladen
 //

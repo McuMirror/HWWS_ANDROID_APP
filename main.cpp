@@ -3,7 +3,7 @@
 // Projekt:          Hochwasser-Warnsystem
 // Compiler:         -
 // Hersteller:       -
-// Autor:            Stefan Wögerbauer
+// Autor:            Stefan W.
 // Filename:         main.cpp
 // Zweck:            open the MainWindow
 //

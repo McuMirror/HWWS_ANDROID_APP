@@ -3,7 +3,7 @@
 // Projekt:          Hochwasser-Warnsystem
 // Compiler:         -
 // Hersteller:       -
-// Autor:            Stefan Wögerbauer
+// Autor:            Stefan W.
 // Filename:         network.h
 //
 // erstellt am:      18.06.2015
