@@ -17,7 +17,7 @@
 
 #include <QString>
 #include <QMessageBox>
-
+//*********************************************************************
 addWarningWindow::addWarningWindow(QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::addWarningWindow)
