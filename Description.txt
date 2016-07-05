@@ -1,0 +1,8 @@
+#############################################
+#	Beschreibung HWWS		    #
+#	18.01.2016			    #
+#############################################
+
+1)  Daten sind ohne Gewähr
+2)  Passwort und Benutzername müssen aus mindestens 4 Zeichen bestehen
+3)  Standard-Warnungsdatei am Server muss "Warnings.txt"heißen

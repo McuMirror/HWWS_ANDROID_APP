@@ -1,0 +1,27 @@
+﻿######################################
+#           TODO Liste:              #
+######################################
+
+
+1) Vibrationsfunktion												----erledigt...neue Notification
+2) Jede aktivierte Warnung soll nur einmal ausgelöst werden							----erledigt
+3) Fehlermeldung "Couldn't download data-file " soll nur einmal erscheinen					----erledigt...erscheint als benachrichtigung
+4) Es müssen immer alle Daten neu heruntergeladen werden, da sie unvollständig sein könnten			----erledigt
+5) mittelwert aus beiden werten berechnen und dann abweichung							----erledigt
+6) Bug Warnung löschen ohne ausgewählte Warnung ...App stürzt ab						----erledigt
+7) Service													----erledigt
+7.1) Benachrichtigung aus Service										----erledigt
+7.2) Warnungen für Service in txt Datei schreiben								----erledigt
+8) Was passiert wenn Daten am Server fehlen ? ...melden ?							----erledigt...werden rot dargestellt
+9) aktive Warnungen werden nach dem Löschen einzelner Warnungen erneut benachrichtigt				----erledigt
+10)erste Warnung wird nicht benachrichtigt									----erledigt
+11)alte Daten löschen												----erledigt
+12)Hinweis bei ungültigem Url											----erledigt
+13)in der funktion chooseFilesForDownload soll jedes objekt mit der funktion update dataGraph connected werden	----erledigt
+14)Skalierung													----erledigt
+15)Config File von Server laden											----erledigt
+16)Downloadfehler sollen gemeldet werden									----erledigt
+17)Login soll immer funktionieren										----erledigt...wurde mit Signal/Slots gemacht
+18)DialogFirstUse umschreiben											----erledigt
+19)Verbindung zu Server in Service prüfen									----
+20)Restart Service nach absturz                                                                                 ----erledigt
