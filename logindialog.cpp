@@ -62,6 +62,11 @@ LoginDialog::LoginDialog(QWidget *parent) :
 
 	QString Password = settingsUser.value("password", "").toString();
     ui->lineEdit_password->setText(Password);
+/*
+	ui->lineEdit_IP_login->setText("oteloserver.ddns.net");
+	ui->lineEdit_password->setText("gdsfgdsg");
+	ui->lineEdit_user->setText("anonymous");
+*/
 }
 
 LoginDialog::~LoginDialog()
