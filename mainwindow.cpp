@@ -95,13 +95,13 @@ MainWindow::MainWindow(QWidget *parent) :
 		ui->pushButton_login->setText("Abmelden");
 		ui->label_value->setText(QString("??? ") + QChar(0x00B1) + QString(" ???") + QString(" cm"));
 
-		QUdpSocket socket;
+        /*QUdpSocket socket;
 		socket.connectToHost(IP, 20);		//FTP Port 20
 		if (!socket.waitForConnected(1000))	//check connection to the server
 		{
 			QMessageBox::critical(this, "HWWS", "Es konnte keine Verbindung zum Server hergestellt werden!"
 												"Bitte überprüfen Sie ihre Internetverbindung ansonsten funktioniert die App nicht");
-		}
+        }*/
 	}
 	else
 	{
