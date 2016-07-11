@@ -37,7 +37,7 @@ DialogFirstUse::DialogFirstUse(QWidget *parent) :
 							 "\n\nEine Warnung wird gesendet sobald einer von zwei Sensorwerten über/unter dem angegebenen Wert liegt"
                              "\n\nIm Tab 'Aktuell' wird der aktuelle Mittelwert beider Sensoren angezeigt. Die Abweichung wird aus den Werten "
 							 "der Sensoren berechnet"
-                             "\nBeide Sensoren werden im Diagramm mit unterschiedlichen Farben Dargestellt:\n\nLaser-Sensor 1: blau\nLaser-Sensor 2: grün"
+                             "\nBeide Sensoren werden im Diagramm mit unterschiedlichen Farben Dargestellt:\n\nLaser-Sensor 1: grün\nLaser-Sensor 2: blau"
                              "\n\nIst die letzte Messung länger als 5 Minuten alt, so wird der letzte Messwert rot angezeigt"
                              "\n\nBevor Sie diese App nutzen können müssen Sie sich im Tab 'Menü' einloggen! \nNach der Installation muss das Handy gegebenfalls neu gestartet werden."
                              "\nIn den Benachrichtigungen wird der aktuelle Status der APP angezeigt."
