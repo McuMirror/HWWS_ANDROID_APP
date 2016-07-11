@@ -105,8 +105,8 @@ public class Download_Check_Service extends Service
         cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
         cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
 
-        //long firstStart = System.currentTimeMillis() + interval;
-        long firstStart = cal.getTimeInMillis() + interval;
+        long firstStart = System.currentTimeMillis() + interval;
+        //long firstStart = cal.getTimeInMillis() + interval;
 
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         am.setInexactRepeating(AlarmManager.RTC, firstStart, interval, MyServicePendingIntent);
