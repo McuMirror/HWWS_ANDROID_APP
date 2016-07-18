@@ -162,14 +162,11 @@ void MainWindow::makeLayout(void)
 
     ui->comboBox->addItem("1", 0);	//ComboBox shownDays
     ui->comboBox->addItem("2", 1);
-    ui->comboBox->addItem("5", 2);
-    ui->comboBox->addItem("7", 3);
-    ui->comboBox->addItem("10", 4);
 
     ui->comboBox->setMaximumHeight(50);
 
 	//Tab Menü
-	ui->textBrowser->setText("ACHTUNG:\nDaten sind ohne Gewähr\nDer Entwickler garantiert keine Richtigkeit der Daten oder Warnungen!"
+    ui->textBrowser->setText("Daten sind ohne Gewähr\nDer Entwickler garantiert keine Richtigkeit der Daten oder Warnungen!"
                              " Er übernimmt auch keine Verantwortung für Folgeschäden");
 
 	ui->labe_loginStatusText->setText("Login Status:");
@@ -186,6 +183,8 @@ void MainWindow::makeLayout(void)
     ui->label_Show_BandText->setText("Abweichung:");
     ui->label_Show_BandText->setFont(defaultHeight);
     ui->label_diagramColor->setText("Hintergrund:");
+    ui->label_showHeightAsNotification->setText("aktuelle Höhe:");
+    ui->label_showHeightAsNotification->setFont(defaultHeight);
     ui->label_diagramColor->setFont(defaultHeight);
     ui->label->setFont(headline);
     //ui->label->setAlignment(Qt::AlignCenter);
@@ -200,6 +199,8 @@ void MainWindow::makeLayout(void)
     ui->pushButton_simulate->setMaximumHeight(ButtonHeight);
     ui->label_info->setFont(headline);
     ui->label_info->setText("Hilfe & Info:");
+    ui->label_attentionBandwidthText->setText("Differenz:");
+    ui->label_attentionBandwidthText->setFont(defaultHeight);
 
 	ui->pushButton_login->setText("Anmelden");
     ui->pushButton_login->setMaximumHeight(ButtonHeight);
@@ -216,8 +217,9 @@ void MainWindow::makeLayout(void)
     ui->pushButton_description->setMaximumHeight(ButtonHeight);
     ui->pushButton_info->setText("Über");
     ui->pushButton_info->setMaximumHeight(ButtonHeight);
-    ui->label_attentionBandwidthText->setText("Differenz:");
-    ui->label_attentionBandwidthText->setFont(defaultHeight);
+    ui->pushButton_showHeightAsNotification->setText("Anzeigen");
+    ui->pushButton_showHeightAsNotification->setCheckable(true);
+    ui->pushButton_showHeightAsNotification->setMaximumHeight(ButtonHeight);
 
     ui->comboBox_attentionBandwidth->addItem("5  cm", 0);
     ui->comboBox_attentionBandwidth->addItem("10 cm", 1);
@@ -226,7 +228,6 @@ void MainWindow::makeLayout(void)
     ui->comboBox_attentionBandwidth->addItem("25 cm", 4);
 
     ui->comboBox_attentionBandwidth->setMaximumHeight(50);
-
 
 	//Tab Aktuell
 	ui->label_temperatur_text->setText("Wassertemperatur:");
@@ -357,6 +358,17 @@ void MainWindow::readFromQSettings(void)
     safety_diff = settings.value("saftyDiff", "").toInt();
 
     ui->comboBox_attentionBandwidth->setCurrentIndex((safety_diff/5)-1);
+
+    if(settings.value("showHeightNotification","").toBool() == true)
+    {
+        ui->pushButton_showHeightAsNotification->setChecked(true);
+        ui->pushButton_showHeightAsNotification->setText("Ausblenden");
+    }
+    else
+    {
+        ui->pushButton_showHeightAsNotification->setChecked(false);
+        ui->pushButton_showHeightAsNotification->setText("Anzeigen");
+    }
 }
 
 void MainWindow::makeDirectories(void)
@@ -385,7 +397,7 @@ void MainWindow::login(void)
 
 	Username = L->returnUserName();
 	Password = L->returnPassword();
-	writeLoginDataFile(L->returnUserName(), L->returnPassword(), L->returnIP());
+    writeLoginDataFile(L->returnUserName(), L->returnPassword(), L->returnIP(), false);
 
     settings.setValue("Username", L->returnUserName());
     settings.setValue("Password",L->returnPassword());
@@ -1003,7 +1015,7 @@ void MainWindow::on_pushButton_login_clicked(void)
 		ui->widget->update();
         ui->listWidget_aktiveWarnings->clear();
 
-        writeLoginDataFile(" ", " ", " ");
+        writeLoginDataFile(" ", " ", " ", "false");
 	}
 }
 
@@ -1101,18 +1113,6 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
 
 	case 1:
 		shownDays = 2;
-		break;
-
-	case 2:
-		shownDays = 5;
-		break;
-
-	case 3:
-		shownDays = 7;
-		break;
-
-	case 4:
-		shownDays = 10;
 		break;
 	}
 
@@ -1289,15 +1289,16 @@ void MainWindow::readWarningFile(void)
     emit readingFinished();
 }
 
-void MainWindow::writeLoginDataFile(QString user, QString password, QString url)
+void MainWindow::writeLoginDataFile(QString user, QString password, QString url, QString showNotification)
 {
 	QFile secret("/storage/emulated/0/HWWS/Daten/secret");
 	if(!secret.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
 		QMessageBox::critical(this, "HWWS", "ERROR: Passwort/Benutzer konnte nicht gespeichert werden");
 	}
+
 	QTextStream out(&secret);
-	out << user + QString(":") + password + QString(":") + url + QString("\n");
+    out << user + QString(":") + password + QString(":") + url + QString(":") + showNotification + QString("\n");
 
 	secret.flush();
 	secret.close();
@@ -1516,4 +1517,20 @@ void MainWindow::on_comboBox_attentionBandwidth_currentIndexChanged(int index)
 void MainWindow::save_safty_diff(void)
 {
     settings.setValue("saftyDiff", safety_diff);
+}
+
+void MainWindow::on_pushButton_showHeightAsNotification_clicked()
+{
+    if(ui->pushButton_showHeightAsNotification->isChecked() == true)
+    {
+        ui->pushButton_showHeightAsNotification->setText("Ausblenden");
+        writeLoginDataFile(Username, Password, IP, "true");
+    }
+    else
+    {
+        ui->pushButton_showHeightAsNotification->setText("Anzeigen");
+        writeLoginDataFile(Username, Password, IP, "false");
+    }
+    settings.setValue("showHeightNotification", ui->pushButton_showHeightAsNotification->isChecked());
+
 }

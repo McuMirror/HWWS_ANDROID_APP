@@ -61,7 +61,7 @@ public class Download_Check_Service extends Service
     private List<Boolean> StateWarningAtOverUnderheight = new ArrayList<Boolean>();
 
     static boolean connection = true;
-    private Thread.UncaughtExceptionHandler onRuntimeError= new Thread.UncaughtExceptionHandler()
+    private Thread.UncaughtExceptionHandler onRuntimeError = new Thread.UncaughtExceptionHandler()
     {
         public void uncaughtException(Thread thread, Throwable ex)
         {
@@ -73,6 +73,7 @@ public class Download_Check_Service extends Service
     private String Password = new String();
     private String User = new String();
     private String Url = new String();
+    private Boolean showNotification = false;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -93,7 +94,7 @@ public class Download_Check_Service extends Service
 
         long interval = DateUtils.MINUTE_IN_MILLIS * 1; // start Service every minute
 
-        Calendar cur_cal = new GregorianCalendar();
+        /*Calendar cur_cal = new GregorianCalendar();
         cur_cal.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
 
         Calendar cal = new GregorianCalendar();
@@ -105,16 +106,15 @@ public class Download_Check_Service extends Service
         cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
         cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
 
+        long firstStart = cal.getTimeInMillis() + interval;*/
+
         long firstStart = System.currentTimeMillis() + interval;
-        //long firstStart = cal.getTimeInMillis() + interval;
 
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         am.setInexactRepeating(AlarmManager.RTC, firstStart, interval, MyServicePendingIntent);
         Log.v("Download_Check_Service", "AlarmManager gesetzt");
 
         //Toast.makeText(this, "HWWS Service onCreate", Toast.LENGTH_LONG).show();
-
-
     }
 
     @Override
@@ -157,8 +157,18 @@ public class Download_Check_Service extends Service
                 CheckWarnings();
                 WriteWarnings();
 
-                NewMessageNotification_steady.notify(this, "Läuft... " + String.valueOf((last_Height_C + last_Height_L) / 2)
-                + " " + "\u00B1" + " " + String.valueOf((Math.abs(last_Height_C-last_Height_L)/2)) + " cm", 0);
+                //MessageNotification.notify(this, Boolean.toString(showNotification),0, "t");
+
+                if(showNotification == true)
+                {
+                    NewMessageNotification_steady.notify(this, "Läuft... " + String.valueOf((last_Height_C + last_Height_L) / 2)
+                    + " " + "\u00B1" + " " + String.valueOf((Math.abs(last_Height_C-last_Height_L)/2)) + " cm", 0);
+                }
+                else
+                {
+                    NewMessageNotification_steady.cancel(this);
+                }
+
             }
             else
             {
@@ -425,6 +435,7 @@ public class Download_Check_Service extends Service
 	   User = sl[0].trim();
 	   Password = sl[1].trim();
 	   Url = sl[2].trim();
+           showNotification = Boolean.valueOf(sl[3].trim());
        }
     }
 

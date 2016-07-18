@@ -69,12 +69,14 @@ private slots:
 	void DownloadSettingsFailed(void);
 	void saveWarningFile(void);
 	void readWarningFile(void);
-	void writeLoginDataFile(QString user, QString password, QString url);
+    void writeLoginDataFile(QString user, QString password, QString url, QString showNotification);
     void on_pushButton_downloadDefaultWarnings_clicked(void);
     void writeTableWidgetWarnings(void);
     void checkWarningAttentions(void);
     void save_safty_diff(void);
     void on_comboBox_attentionBandwidth_currentIndexChanged(int index);
+
+    void on_pushButton_showHeightAsNotification_clicked();
 
 private:
     Ui::MainWindow *ui;
