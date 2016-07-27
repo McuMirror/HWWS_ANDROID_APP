@@ -397,7 +397,7 @@ void MainWindow::login(void)
 
 	Username = L->returnUserName();
 	Password = L->returnPassword();
-    writeLoginDataFile(L->returnUserName(), L->returnPassword(), L->returnIP(), false);
+    writeLoginDataFile(L->returnUserName(), L->returnPassword(), L->returnIP(), "false");
 
     settings.setValue("Username", L->returnUserName());
     settings.setValue("Password",L->returnPassword());
@@ -741,18 +741,75 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         diff_last = ((float)values_C.last() - (float)values_L.last()) / 2;
         diff_secondLast = ((float)values_C.at(values_C.length()-2) - (float)values_L.at(values_L.length()-2)) / 2;
 
-		if(diff_last > diff_secondLast)
-		{
-			ui->label_prognose->setText("steigend " + QString(QChar(0x2191)));
-		}
-		else if(diff_last < diff_secondLast)
-		{
-			ui->label_prognose->setText("sinkend " + QString(QChar(0x2193)));
-		}
-		else if(diff_last == diff_secondLast)
-		{
-			ui->label_prognose->setText("konstant " + QString(QChar(0x2192)));
-		}
+        double summe_x_C = 0;
+        double summe_y_C = 0;
+        double zaeler_C = 1;
+        double nenner_C = 1;
+        double steigung_C=1;
+
+        double summe_x_L = 0;
+        double summe_y_L = 0;
+        double zaeler_L = 1;
+        double nenner_L = 1;
+        double steigung_L=1;
+
+#define number_of_values 30
+
+        for(int i = 1; i <= number_of_values; i++)
+        {
+            summe_y_C = summe_y_C+ values_C.at(values_C.length() - i);
+            summe_x_C = summe_x_C + x_minute.at(x_minute.length() - i);
+        }
+
+        for(int i=1; i <= number_of_values; i++)
+        {
+            zaeler_C = zaeler_C * (values_C.at(i) - summe_y_C);
+            nenner_C = nenner_C * (x_minute.at(i) - summe_x_C);
+        }
+        steigung_C = -zaeler_C/nenner_C;
+
+        qDebug() << "summe_x_C= " << summe_y_C;
+        qDebug() << "summe_y_C= " << summe_x_C;
+        qDebug() << "zähler_C = " << zaeler_C;
+        qDebug() << "nenner_C = " << nenner_C;
+        qDebug() << "steigung_C= "<< steigung_C;
+
+        for(int i = 1; i <= number_of_values; i++)
+        {
+            summe_y_L = summe_y_L + values_L.at(values_L.length() - i);
+            summe_x_L = summe_x_L + x_minute.at(x_minute.length() - i);
+        }
+
+        for(int i=1; i <= number_of_values; i++)
+        {
+            zaeler_L = zaeler_L * (values_L.at(i) - summe_y_L);
+            nenner_L = nenner_L * (x_minute.at(i) - summe_x_L);
+        }
+        steigung_L = -zaeler_L/nenner_L;
+
+        qDebug() << "summe_x_L= " << summe_y_L;
+        qDebug() << "summe_y_L= " << summe_x_L;
+        qDebug() << "zähler_L = " << zaeler_L;
+        qDebug() << "nenner_L = " << nenner_L;
+        qDebug() << "steigung_L= "<< steigung_L;
+
+        if(steigung_C > 0 && steigung_L > 0)
+        {
+            ui->label_prognose->setText("steigend " + QString(QChar(0x2191)));
+        }
+        else if(steigung_C < 0 && steigung_L < 0)
+        {
+            ui->label_prognose->setText("sinkend " + QString(QChar(0x2193)));
+        }
+        else if(steigung_C == 1 && steigung_L == 0)
+        {
+            ui->label_prognose->setText("konstant " + QString(QChar(0x2192)));
+        }
+        else
+        {
+            ui->label_prognose->setText("nicht verfügbar");
+        }
+
 	}
 	else
 	{
