@@ -741,57 +741,10 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         diff_last = ((float)values_C.last() - (float)values_L.last()) / 2;
         diff_secondLast = ((float)values_C.at(values_C.length()-2) - (float)values_L.at(values_L.length()-2)) / 2;
 
-        double summe_x_C = 0;
-        double summe_y_C = 0;
-        double zaeler_C = 1;
-        double nenner_C = 1;
-        double steigung_C=1;
-
-        double summe_x_L = 0;
-        double summe_y_L = 0;
-        double zaeler_L = 1;
-        double nenner_L = 1;
-        double steigung_L=1;
-
-#define number_of_values 30
-
-        for(int i = 1; i <= number_of_values; i++)
-        {
-            summe_y_C = summe_y_C+ values_C.at(values_C.length() - i);
-            summe_x_C = summe_x_C + x_minute.at(x_minute.length() - i);
-        }
-
-        for(int i=1; i <= number_of_values; i++)
-        {
-            zaeler_C = zaeler_C * (values_C.at(i) - summe_y_C);
-            nenner_C = nenner_C * (x_minute.at(i) - summe_x_C);
-        }
-        steigung_C = -zaeler_C/nenner_C;
-
-        qDebug() << "summe_x_C= " << summe_y_C;
-        qDebug() << "summe_y_C= " << summe_x_C;
-        qDebug() << "zähler_C = " << zaeler_C;
-        qDebug() << "nenner_C = " << nenner_C;
-        qDebug() << "steigung_C= "<< steigung_C;
-
-        for(int i = 1; i <= number_of_values; i++)
-        {
-            summe_y_L = summe_y_L + values_L.at(values_L.length() - i);
-            summe_x_L = summe_x_L + x_minute.at(x_minute.length() - i);
-        }
-
-        for(int i=1; i <= number_of_values; i++)
-        {
-            zaeler_L = zaeler_L * (values_L.at(i) - summe_y_L);
-            nenner_L = nenner_L * (x_minute.at(i) - summe_x_L);
-        }
-        steigung_L = -zaeler_L/nenner_L;
-
-        qDebug() << "summe_x_L= " << summe_y_L;
-        qDebug() << "summe_y_L= " << summe_x_L;
-        qDebug() << "zähler_L = " << zaeler_L;
-        qDebug() << "nenner_L = " << nenner_L;
-        qDebug() << "steigung_L= "<< steigung_L;
+        steigung_C = calculatePitch(values_C, x_minute);
+        steigung_L = calculatePitch(values_L, x_minute);
+        //qDebug()<< "k_C" << steigung_C;
+        //qDebug()<< "k_L" << steigung_L;
 
         if(steigung_C > 0 && steigung_L > 0)
         {
@@ -1466,13 +1419,21 @@ void MainWindow::checkWarningAttentions(void)
                     QTableWidgetItem* nameItem = new QTableWidgetItem(Warnings.at(i)->getName());
                     ui->tableWidget_attention->setItem(rows, 0, nameItem);
 
-                    float k = diff_last - diff_secondLast;
-                    float dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2;
-                    float dx = dy / k;
+                    double k=0;
+                    if((steigung_C > 0 && steigung_L >0) || (steigung_C < 0 && steigung_L < 0))
+                    {
+                        k = (steigung_C + steigung_L) /2;
+                    }
+                    else
+                    {
+                        break;
+                    }
                     qDebug()<<"k=" <<k;
+                    double dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2;
+                    double dx = dy/k;
 
                     QTime now = QTime::currentTime();
-                    QTime triggerTime = now.addSecs(dx*60);
+                    QTime triggerTime = now.addSecs(dx*(double)60);
                     if(k > 0)
                     {
                             QTableWidgetItem* valueItem = new QTableWidgetItem("ca. " + triggerTime.toString());
@@ -1511,13 +1472,21 @@ void MainWindow::checkWarningAttentions(void)
                     QTableWidgetItem* nameItem = new QTableWidgetItem(Warnings.at(i)->getName());
                     ui->tableWidget_attention->setItem(rows, 0, nameItem);
 
-                    float k = diff_last - diff_secondLast;
-                    float dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2;
-                    float dx = dy / k;
+                    double k=0;
+                    if((steigung_C > 0 && steigung_L >0) || (steigung_C < 0 && steigung_L < 0))
+                    {
+                        k = (steigung_C + steigung_L) /2;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    double dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2;
+                    double dx = dy/k;
                     qDebug()<<"k=" <<k;
 
                     QTime now = QTime::currentTime();
-                    QTime triggerTime = now.addSecs(dx*60);
+                    QTime triggerTime = now.addSecs(dx*(double)60);
                     if(k < 0)
                     {
                         QTableWidgetItem* valueItem = new QTableWidgetItem("ca. " + triggerTime.toString());
@@ -1590,4 +1559,35 @@ void MainWindow::on_pushButton_showHeightAsNotification_clicked()
     }
     settings.setValue("showHeightNotification", ui->pushButton_showHeightAsNotification->isChecked());
 
+}
+
+double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute)
+{
+    double summe_x = 0;
+    double summe_y = 0;
+    double zaeler = 1;
+    double nenner = 1;
+    double steigung=1;
+
+#define number_of_values 30
+
+    for(int i = 1; i <= number_of_values; i++)
+    {
+        summe_y = summe_y+ values.at(values.length() - i);
+        summe_x = summe_x + x_minute.at(x_minute.length() - i);
+    }
+
+    for(int i=1; i <= number_of_values; i++)
+    {
+        zaeler = zaeler * (values.at(i) - summe_y);
+        nenner = nenner * (x_minute.at(i) - summe_x);
+    }
+    steigung = zaeler/(nenner*nenner);
+
+    //qDebug() << "summe_x= " << summe_y;
+    //qDebug() << "summe_y= " << summe_x;
+    //qDebug() << "zähler = " << zaeler;
+    //qDebug() << "nenner = " << nenner;
+    //qDebug() << "steigung= "<< steigung;
+    return steigung;
 }
