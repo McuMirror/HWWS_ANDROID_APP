@@ -27,6 +27,9 @@
 #include <QString>
 #include <QDateTime>
 
+#define measureMax 280.0
+#define measureMin -20.0
+
 graph::graph(QWidget *parent) :
 	QWidget(parent)
 {
@@ -103,15 +106,13 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 
 	int x;
 	int y;
-    float k  = -rect().height()/250.0;
-	int d = rect().height()-k*(-20);
+    float k  = -rect().height()/measureMax;
+    int d = rect().height()-k*(measureMin);
 	// y = k * x + d
 
 	for(int z=0; z<values_C.size(); z++)
 	{
 		x = x_minute.at(z);
-		//y= ((rect().height()/27*25) - values_C.at(z)*rect().height()/270);
-
 		y = k * values_C.at(z) + d;
 
 		line_C.append(QPoint(x, y));
@@ -120,9 +121,7 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 	for(int u=0; u<values_L.size(); u++)
 	{
 		x = x_minute.at(u);
-		//y= ((rect().height()/27*25) - values_L.at(u)*rect().height()/270);
-
-		y = k * values_L.at(u) + d;
+        y = k * values_L.at(u) + d;
 
 		line_L.append(QPoint(x, y));
 	}
@@ -130,7 +129,7 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 	//***********************************************************************************************************************************
 
 	p.setPen(missingValuesPen);                 //draw missing values
-	for(int i=0; i<missingValues.size(); i++)
+    for(int i = 0; i < missingValues.size(); i++)
 	{
 		p.drawLine(missingValues.at(i), 0, missingValues.at(i), rect().height());
 	}
@@ -150,11 +149,11 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 	//*************************************************************************************************************************************
 	//write the horizontal scale
 
-	for(int i=0; i<=rect().width(); i++)
+    for(int i = 0; i <= rect().width(); i++)
 	{
 		if(i%600 == 0)
 		{
-			for(int ii=-10; ii<250; ii = ii+10)
+            for(int ii = measureMin + 10; ii < measureMax; ii = ii+10)
 			{
 				p.setPen(scalePen);
 				y = k * ii + d;
@@ -166,11 +165,11 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 	//**************************************************************************************************************************************
 	//Draw horizontal grid
 
-	for(int i=-1;i<25;i++)
+    for(int i = measureMin + 10; i < measureMax; i = i+10)
 	{
 		p.setPen(gridPen);
-		y = k * i*10 + d;
-		//p.drawLine(0, rect().height()/27*i, rect().width(), rect().height()/27*i);
+        y = k * i + d;
+
 		p.drawLine(0, y, rect().width(), y);
 	}
 

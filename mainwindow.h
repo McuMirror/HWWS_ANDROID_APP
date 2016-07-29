@@ -75,7 +75,7 @@ private slots:
     void checkWarningAttentions(void);
     void save_safty_diff(void);
     void on_comboBox_attentionBandwidth_currentIndexChanged(int index);
-
+    double calculatePitch(QList<int> values, QList<int> x_minute);
     void on_pushButton_showHeightAsNotification_clicked();
 
 private:
@@ -125,6 +125,9 @@ private:
     QString Password;
     QString IP;
 	QString location;
+
+    double steigung_C;
+    double steigung_L;
 
     Notifier* notificationClient = new Notifier;
 	LoginDialog* L = new LoginDialog;          //show login-field
