@@ -756,7 +756,8 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         {
             ui->label_prognose->setText("konstant " + QString(QChar(0x2192)));
         }
-        else if(steigung_L < 0 && steigung_C == 0)
+        /*
+         * else if(steigung_L < 0 && steigung_C == 0)
         {
             ui->label_prognose->setText("? sinkend ? " + QString(QChar(0x2193)));
         }
@@ -772,6 +773,7 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         {
             ui->label_prognose->setText("? steigend ? " + QString(QChar(0x2191)));
         }
+        */
         else
         {
             ui->label_prognose->setText("ERROR");
@@ -1608,7 +1610,5 @@ double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute)
     qDebug() << "nenner = " << nenner;
     qDebug() << "steigung= "<< steigung;
 
-
-
-    return -steigung;
+    return steigung;
 }
