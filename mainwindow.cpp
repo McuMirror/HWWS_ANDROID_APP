@@ -743,8 +743,6 @@ void MainWindow::updateGraphData (void)    //update the graph and output
 
         steigung_C = calculatePitch(values_C, x_minute);
         steigung_L = calculatePitch(values_L, x_minute);
-        //qDebug()<< "k_C" << steigung_C;
-        //qDebug()<< "k_L" << steigung_L;
 
         if(steigung_C > 0 && steigung_L > 0)
         {
@@ -754,13 +752,13 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         {
             ui->label_prognose->setText("sinkend " + QString(QChar(0x2193)));
         }
-        else if(steigung_C == 1 && steigung_L == 0)
+        else if(steigung_C == 0 && steigung_L == 0)
         {
             ui->label_prognose->setText("konstant " + QString(QChar(0x2192)));
         }
         else
         {
-            ui->label_prognose->setText("nicht verfügbar");
+            ui->label_prognose->setText("ERROR");
         }
 
 	}
@@ -1565,29 +1563,39 @@ double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute)
 {
     double summe_x = 0;
     double summe_y = 0;
-    double zaeler = 1;
-    double nenner = 1;
-    double steigung=1;
+    double zaeler = 0;
+    double nenner = 0;
+    double steigung = 0;
 
-#define number_of_values 30
+    double number_of_values = 15;
 
     for(int i = 1; i <= number_of_values; i++)
     {
-        summe_y = summe_y+ values.at(values.length() - i);
+        summe_y = summe_y + values.at(values.length() - i);
         summe_x = summe_x + x_minute.at(x_minute.length() - i);
     }
 
-    for(int i=1; i <= number_of_values; i++)
+    for(int i = 1; i <= number_of_values; i++)
     {
-        zaeler = zaeler * (values.at(i) - summe_y);
-        nenner = nenner * (x_minute.at(i) - summe_x);
-    }
-    steigung = zaeler/(nenner*nenner);
+        double y_y = values.at(values.length() - i) - (1/number_of_values) * summe_y;
+        double x_x = x_minute.at(x_minute.length() - i) - (1/number_of_values * summe_x);
 
-    //qDebug() << "summe_x= " << summe_y;
-    //qDebug() << "summe_y= " << summe_x;
+        zaeler  = zaeler + (x_x * y_y);
+        nenner = nenner + pow((x_minute.at(i) - 1/number_of_values * summe_x), 2);
+    }
+
+    steigung = (double)zaeler/(double)nenner;
+
+    //qDebug() << "summe_y= " << summe_y;
+    //qDebug() << "summe_x= " << summe_x;
     //qDebug() << "zähler = " << zaeler;
     //qDebug() << "nenner = " << nenner;
     //qDebug() << "steigung= "<< steigung;
+
+    if(abs(steigung) < 0.1)
+    {
+        steigung = 0;
+    }
+
     return steigung;
 }
