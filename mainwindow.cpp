@@ -756,24 +756,6 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         {
             ui->label_prognose->setText("konstant " + QString(QChar(0x2192)));
         }
-        /*
-         * else if(steigung_L < 0 && steigung_C == 0)
-        {
-            ui->label_prognose->setText("? sinkend ? " + QString(QChar(0x2193)));
-        }
-        else if(steigung_L > 0 && steigung_C == 0)
-        {
-            ui->label_prognose->setText("? steigend ? " + QString(QChar(0x2191)));
-        }
-        else if(steigung_C < 0 && steigung_L == 0)
-        {
-            ui->label_prognose->setText("? sinkend ? " + QString(QChar(0x2193)));
-        }
-        else if(steigung_C > 0 && steigung_L == 0)
-        {
-            ui->label_prognose->setText("? steigend ? " + QString(QChar(0x2191)));
-        }
-        */
         else
         {
             ui->label_prognose->setText("ERROR");
@@ -924,33 +906,10 @@ void MainWindow::checkWarnings(void)
 
 	if((downloadFail == false) && (LoginState == true)) //if there was no error while downloading all warnings will be checked
 	{
+        ui->listWidget_aktiveWarnings->clear();
 		for(int i=0; i<Warnings.size(); i++)
 		{
-			/*
-			if(((Warnings.at(i)->getHeight() <= lastValue_C)) || (Warnings.at(i)->getHeight()<= lastValue_L))
-			{
-				QListWidgetItem *newItem = new QListWidgetItem;
-				newItem->setText(Warnings.at(i)->getName());
-				ui->listWidget_aktiveWarnings->insertItem(1, newItem);
-
-				ui->tableWidget_Warnings->item(i,0)->setBackground(Qt::red);
-				ui->tableWidget_Warnings->item(i,1)->setBackground(Qt::red);
-
-				if(Warnings.at(i)->getTriggerState() == false)
-				{
-					//notificationClient->notification("WARNUNG: kritische Höhe für " + QString(Warnings.at(i)->getName()), true , true);
-					Warnings.at(i)->setTriggerState(true);
-				}
-			}
-			else
-			{
-				ui->tableWidget_Warnings->item(i,0)->setBackground(Qt::white);
-				ui->tableWidget_Warnings->item(i,1)->setBackground(Qt::white);
-
-				Warnings.at(i)->setTriggerState(false);
-			}*/
-
-			if(Warnings.at(i)->getTriggerState() == true)
+            if(Warnings.at(i)->getTriggerState() == true)
 			{
 				count++;
 
@@ -967,7 +926,6 @@ void MainWindow::checkWarnings(void)
                 ui->tableWidget_Warnings->item(i, 1)->setBackground(Qt::white);
 			}
 		}
-		//saveWarnings();
 		ui->label_numberOfActiveWarnings->setText(QString::number(count));   
     }
     checkWarningAttentions();
@@ -1144,7 +1102,7 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
 
 	ui->widget->setDays(shownDays);
 	chooseFilesForDownload();
-	ui->widget->update();
+    //ui->widget->update();
 }
 
 void MainWindow::on_pushButton_description_clicked(void)
@@ -1436,7 +1394,7 @@ void MainWindow::checkWarningAttentions(void)
                     ui->tableWidget_attention->setItem(rows, 0, nameItem);
 
                     double k=0;
-                    if((steigung_C > 0 && steigung_L >0) || (steigung_C < 0 && steigung_L < 0))
+                    if((steigung_C > 0 && steigung_L >0) || (steigung_C < 0 && steigung_L < 0) || (steigung_C == 0 && steigung_L == 0))
                     {
                         k = (steigung_C + steigung_L) /2;
                     }
