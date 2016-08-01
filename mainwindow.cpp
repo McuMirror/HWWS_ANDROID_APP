@@ -756,6 +756,22 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         {
             ui->label_prognose->setText("konstant " + QString(QChar(0x2192)));
         }
+        else if(steigung_L < 0 && steigung_C == 0)
+        {
+            ui->label_prognose->setText("? sinkend ? " + QString(QChar(0x2193)));
+        }
+        else if(steigung_L > 0 && steigung_C == 0)
+        {
+            ui->label_prognose->setText("? steigend ? " + QString(QChar(0x2191)));
+        }
+        else if(steigung_C < 0 && steigung_L == 0)
+        {
+            ui->label_prognose->setText("? sinkend ? " + QString(QChar(0x2193)));
+        }
+        else if(steigung_C > 0 && steigung_L == 0)
+        {
+            ui->label_prognose->setText("? steigend ? " + QString(QChar(0x2191)));
+        }
         else
         {
             ui->label_prognose->setText("ERROR");
@@ -1567,7 +1583,7 @@ double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute)
     double nenner = 0;
     double steigung = 0;
 
-    double number_of_values = 15;
+    double number_of_values = 30;
 
     for(int i = 1; i <= number_of_values; i++)
     {
@@ -1586,16 +1602,13 @@ double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute)
 
     steigung = (double)zaeler/(double)nenner;
 
-    //qDebug() << "summe_y= " << summe_y;
-    //qDebug() << "summe_x= " << summe_x;
-    //qDebug() << "zähler = " << zaeler;
-    //qDebug() << "nenner = " << nenner;
-    //qDebug() << "steigung= "<< steigung;
+    qDebug() << "summe_y= " << summe_y;
+    qDebug() << "summe_x= " << summe_x;
+    qDebug() << "zähler = " << zaeler;
+    qDebug() << "nenner = " << nenner;
+    qDebug() << "steigung= "<< steigung;
 
-    if(abs(steigung) < 0.1)
-    {
-        steigung = 0;
-    }
 
-    return steigung;
+
+    return -steigung;
 }
