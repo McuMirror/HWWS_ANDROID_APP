@@ -1384,6 +1384,8 @@ void MainWindow::checkWarningAttentions(void)
                     }
                     else
                     {
+                        QTableWidgetItem* valueItem = new QTableWidgetItem("ERROR");
+                        ui->tableWidget_attention->setItem(rows, 1, valueItem);
                         return;
                     }
                     qDebug()<<"k=" <<k;
@@ -1437,7 +1439,9 @@ void MainWindow::checkWarningAttentions(void)
                     }
                     else
                     {
-                        break;
+                        QTableWidgetItem* valueItem = new QTableWidgetItem("ERROR");
+                        ui->tableWidget_attention->setItem(rows, 1, valueItem);
+                        return;
                     }
                     double dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2.0;
                     double dx = dy/k;
