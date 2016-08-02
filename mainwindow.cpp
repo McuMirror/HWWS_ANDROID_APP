@@ -8,7 +8,7 @@
 // Zweck:            controlling the app (logic)
 //
 // erstellt am:      18.06.2015
-// zuletzt geändert: 21.03.2016
+// zuletzt geändert: 01.08.2016
 // ****************************************************************************
 */
 
@@ -44,7 +44,6 @@
 #include <QScrollBar>
 #include <QAbstractScrollArea>
 #include <QUdpSocket>
-#include <QLockFile>
 
 //included to use Java code
 #include <QtAndroidExtras/QAndroidJniObject>
@@ -741,8 +740,11 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         diff_last = ((float)values_C.last() - (float)values_L.last()) / 2;
         diff_secondLast = ((float)values_C.at(values_C.length()-2) - (float)values_L.at(values_L.length()-2)) / 2;
 
-        steigung_C = calculatePitch(values_C, x_minute);
-        steigung_L = calculatePitch(values_L, x_minute);
+        steigung_C = calculatePitch(values_C, x_minute, 30);
+        steigung_L = calculatePitch(values_L, x_minute, 30);
+
+        steigung_C_5min = calculatePitch(values_C, x_minute, 5);
+        steigung_L_5min = calculatePitch(values_L, x_minute, 5);
 
         if(steigung_C > 0 && steigung_L > 0)
         {
@@ -1159,25 +1161,6 @@ void MainWindow::DownloadSettingsFailed(void)
 
 void MainWindow::saveWarningFile(void)
 {
-/*
-    QLockFile lock("/storage/emulated/0/HWWS/Daten/Warnings.txt");
-    if(lock.lock() == QLockFile::NoError)
-    {
-        QMessageBox::critical(this, "HWWS", "ERROR: Warnungs-Datei erfolgreich gesperrt");
-    }
-    else if(lock.lock() == QLockFile::LockFailedError)
-    {
-        QMessageBox::critical(this, "HWWS", "ERROR: Lock Failed");
-    }
-    else if(lock.lock() == QLockFile::PermissionError)
-    {
-        QMessageBox::critical(this, "HWWS", "ERROR: Permission Error");
-    }
-    else if(lock.lock() == QLockFile::UnknownError)
-    {
-        QMessageBox::critical(this, "HWWS", "ERROR: unknown");
-    }
-*/
     QFile warnings("/storage/emulated/0/HWWS/Daten/Warnings.txt");
 
     if(!warnings.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1219,7 +1202,6 @@ void MainWindow::saveWarningFile(void)
 
     warnings.flush();
     warnings.close();
-   // lock.unlock();
 
 	qDebug()<< "warning-file saved";
 }
@@ -1394,16 +1376,18 @@ void MainWindow::checkWarningAttentions(void)
                     ui->tableWidget_attention->setItem(rows, 0, nameItem);
 
                     double k=0;
-                    if((steigung_C > 0 && steigung_L >0) || (steigung_C < 0 && steigung_L < 0) || (steigung_C == 0 && steigung_L == 0))
+                    if(((steigung_C_5min > 0) && (steigung_L_5min >0)) || ((steigung_C_5min < 0) && (steigung_L_5min < 0)) || ((steigung_C_5min == 0) && (steigung_L_5min == 0)))
                     {
-                        k = (steigung_C + steigung_L) /2;
+                        qDebug()<<"steigung_C_5min=" << steigung_C_5min;
+                        qDebug()<<"steigung_L_5min=" << steigung_L_5min;
+                        k = (steigung_C_5min + steigung_L_5min) /(double)2.0;
                     }
                     else
                     {
-                        break;
+                        return;
                     }
                     qDebug()<<"k=" <<k;
-                    double dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2;
+                    double dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2.0;
                     double dx = dy/k;
 
                     QTime now = QTime::currentTime();
@@ -1447,15 +1431,15 @@ void MainWindow::checkWarningAttentions(void)
                     ui->tableWidget_attention->setItem(rows, 0, nameItem);
 
                     double k=0;
-                    if((steigung_C > 0 && steigung_L >0) || (steigung_C < 0 && steigung_L < 0))
+                    if((steigung_C_5min > 0 && steigung_L_5min >0) || (steigung_C_5min < 0 && steigung_L_5min < 0) || (steigung_C_5min == 0 && steigung_L_5min == 0))
                     {
-                        k = (steigung_C + steigung_L) /2;
+                        k = (steigung_C_5min + steigung_L_5min) /(double)2.0;
                     }
                     else
                     {
                         break;
                     }
-                    double dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2;
+                    double dy = Warnings.at(i)->getHeight() - (lastValue_C + lastValue_L)/2.0;
                     double dx = dy/k;
                     qDebug()<<"k=" <<k;
 
@@ -1535,7 +1519,7 @@ void MainWindow::on_pushButton_showHeightAsNotification_clicked()
 
 }
 
-double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute)
+double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute, double numberOfValues)
 {
     double summe_x = 0;
     double summe_y = 0;
@@ -1543,21 +1527,19 @@ double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute)
     double nenner = 0;
     double steigung = 0;
 
-    double number_of_values = 30;
-
-    for(int i = 1; i <= number_of_values; i++)
+    for(int i = 1; i <= numberOfValues; i++)
     {
         summe_y = summe_y + values.at(values.length() - i);
         summe_x = summe_x + x_minute.at(x_minute.length() - i);
     }
 
-    for(int i = 1; i <= number_of_values; i++)
+    for(int i = 1; i <= numberOfValues; i++)
     {
-        double y_y = values.at(values.length() - i) - (1/number_of_values) * summe_y;
-        double x_x = x_minute.at(x_minute.length() - i) - (1/number_of_values * summe_x);
+        double y_y = values.at(values.length() - i) - (1/numberOfValues) * summe_y;
+        double x_x = x_minute.at(x_minute.length() - i) - (1/numberOfValues * summe_x);
 
         zaeler  = zaeler + (x_x * y_y);
-        nenner = nenner + pow((x_minute.at(i) - 1/number_of_values * summe_x), 2);
+        nenner = nenner + pow(x_x, 2);
     }
 
     steigung = (double)zaeler/(double)nenner;
@@ -1566,7 +1548,7 @@ double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute)
     qDebug() << "summe_x= " << summe_x;
     qDebug() << "zähler = " << zaeler;
     qDebug() << "nenner = " << nenner;
-    qDebug() << "steigung= "<< steigung;
+    qDebug() << "steigung="<< steigung;
 
     return steigung;
 }

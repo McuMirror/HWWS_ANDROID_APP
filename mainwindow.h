@@ -75,7 +75,7 @@ private slots:
     void checkWarningAttentions(void);
     void save_safty_diff(void);
     void on_comboBox_attentionBandwidth_currentIndexChanged(int index);
-    double calculatePitch(QList<int> values, QList<int> x_minute);
+    double calculatePitch(QList<int> values, QList<int> x_minute, double numberOfValues);
     void on_pushButton_showHeightAsNotification_clicked();
 
 private:
@@ -95,21 +95,7 @@ private:
 
     float diff_last = 0;
     float diff_secondLast = 0;
-/*
-    QSettings WarningListSave;
-    QSettings LoginStateSave;
-    QSettings UsernameSave;
-    QSettings PasswordSave;
-    QSettings IPSave;
-    QSettings FirstUseSave;
-	QSettings SensorHeightSave;
-	QSettings VersionSave;
-	QSettings LocationSave;
-	QSettings ShowWarningValuesSave;
-	QSettings ShowBandSave;
-	QSettings BackroundColorSave;
-    QSettings safty_diffSave;
-*/
+
     QSettings settings;
 
 	QList<int> WarningHeights;          //Warning value
@@ -128,6 +114,9 @@ private:
 
     double steigung_C;
     double steigung_L;
+
+    double steigung_C_5min;
+    double steigung_L_5min;
 
     Notifier* notificationClient = new Notifier;
 	LoginDialog* L = new LoginDialog;          //show login-field
