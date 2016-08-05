@@ -27,7 +27,7 @@
 #include <QString>
 #include <QDateTime>
 
-#define measureMax 280.0
+#define measureMax 280.0    //Graph max = measureMax + measureMin
 #define measureMin -20.0
 
 graph::graph(QWidget *parent) :

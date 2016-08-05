@@ -74,14 +74,14 @@ private slots:
     void writeTableWidgetWarnings(void);
     void checkWarningAttentions(void);
     void save_safty_diff(void);
-    void on_comboBox_attentionBandwidth_currentIndexChanged(int index);
-    double calculatePitch(QList<int> values, QList<int> x_minute, double numberOfValues);
+    void on_comboBox_attentionBandwidth_currentIndexChanged(int index); 
     void on_pushButton_showHeightAsNotification_clicked();
+    double calculatePitch(QList<int> values, QList<int> x_minute, double numberOfValues);
 
 private:
     Ui::MainWindow *ui;
 
-    QTimer *Timer;     //Updates the clock in status bar
+    QTimer *Timer;          //Updates the clock in status bar
     QTimer *updateTimer;    //Updates the data of the value
 
     int lastValue_C;
@@ -92,9 +92,6 @@ private:
     int temp_last_value;
 	int sensorHeight;
     int safety_diff = 5;
-
-    float diff_last = 0;
-    float diff_secondLast = 0;
 
     QSettings settings;
 

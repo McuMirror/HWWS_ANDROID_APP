@@ -94,13 +94,13 @@ MainWindow::MainWindow(QWidget *parent) :
 		ui->pushButton_login->setText("Abmelden");
 		ui->label_value->setText(QString("??? ") + QChar(0x00B1) + QString(" ???") + QString(" cm"));
 
-        /*QUdpSocket socket;
+        QUdpSocket socket;
 		socket.connectToHost(IP, 20);		//FTP Port 20
 		if (!socket.waitForConnected(1000))	//check connection to the server
 		{
 			QMessageBox::critical(this, "HWWS", "Es konnte keine Verbindung zum Server hergestellt werden!"
 												"Bitte überprüfen Sie ihre Internetverbindung ansonsten funktioniert die App nicht");
-        }*/
+        }
 	}
 	else
 	{
@@ -121,6 +121,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::makeLayout(void)
 {
+    qDebug()<<"Method: MakeLayout";
+
     QFont defaultHeight;
     defaultHeight.setPointSize(19);
     QFont headline;
@@ -284,25 +286,7 @@ void MainWindow::makeLayout(void)
 
 void MainWindow::readFromQSettings(void)
 {
-	/*
-	int size_Warnings = WarningListSave.beginReadArray("WarningList");
-
-	qDebug()<<"Warnings Size:" << size_Warnings;
-
-	for(int i=0; i<size_Warnings; i++)
-	{
-		WarningListSave.setArrayIndex(i);
-		int height = WarningListSave.value("Height", "").toInt();
-		QString name = WarningListSave.value("Name", "").toString();
-		bool TriggerState = WarningListSave.value("TriggerState", "").toBool();
-
-		Warnings.append(new Warning);
-		Warnings.last()->setHeight(height);
-		Warnings.last()->setName(name);
-		Warnings.last()->setTriggerState(TriggerState);
-	}
-	WarningListSave.endArray();
-*/
+    qDebug()<<"Method: readFromQSettings";
 
 	//****************************************************************************************************
 
@@ -330,7 +314,7 @@ void MainWindow::readFromQSettings(void)
 	{
 		sensorHeight = 1;
 	}
-
+    qDebug()<<"sensorHeight" << sensorHeight;
 	//******************************************************************************************************
 
 	bool button;
@@ -372,6 +356,8 @@ void MainWindow::readFromQSettings(void)
 
 void MainWindow::makeDirectories(void)
 {
+    qDebug()<<"Method: makeDirectories";
+
 	QDir create_1 ("/storage/emulated/0/HWWS");         //creating the folders if they're not existing
 	if (!create_1.exists())
 	{
@@ -664,20 +650,21 @@ void MainWindow::updateGraphData (void)    //update the graph and output
 			bool ok4;
 			bool ok5;
 
-			int hour = sl.at(0).toInt(&ok1);
-			int minute = sl.at(1).toInt(&ok2);
-			int height_C = sl.at(3).toInt(&ok3);
-			int height_L = sl.at(4).toInt(&ok4);
-			int temp = sl.at(5).toInt(&ok5);
+            int hour =      sl.at(0).toInt(&ok1);
+            int minute =    sl.at(1).toInt(&ok2);
+            int height_C =  sl.at(3).toInt(&ok3);
+            int height_L =  sl.at(4).toInt(&ok4);
+            int temp =      sl.at(5).toInt(&ok5);
 
 			//checking the values
 			if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5)
 			{
 				invalidConvert = true;
-			}
+            }
 
 			// invalid character
-			if( !((hour>=0 && hour<=23) && (minute>=0 && minute<=59) && ((height_C >= sensorHeight*(-1)) && height_C <= sensorHeight) && (height_L>=sensorHeight*(-1) && height_L<=sensorHeight)))
+            if( !((hour>=0 && hour<=23) && (minute>=0 && minute<=59) && ((height_C >= sensorHeight*(-1)) && height_C <= sensorHeight) &&
+                  (height_L>=sensorHeight*(-1) && height_L<=sensorHeight)))
 			{
 				invalidCharacter = true;
 			}
@@ -693,16 +680,23 @@ void MainWindow::updateGraphData (void)    //update the graph and output
 				hour_last_value = hour;
 				temp_last_value = temp;
 			}
+            else
+            {
+                qDebug() << "invalid value";
+                qDebug() << "invalid File: "        << invalidFile;
+                qDebug() << "invalid Character: "   << invalidCharacter;
+                qDebug() << "invalid Convert: "     << invalidConvert;
+            }
 		}
+
 		file.close();
 	}
 	//********************************************************************************************************************************
-
 	//check if any data is missing, mark this position in graph red
-	for(int i=0; i<time.toString("H").toInt()*60 + time.toString("m").toInt()+(shownDays-1)*1440; i++)
+    for(int i = 0; i < time.toString("H").toInt()*60 + time.toString("m").toInt()+(shownDays-1)*1440; i++)
 	{
-		int count=0;
-		for(int ii=0; ii<x_minute.size(); ii++)
+        int count = 0;
+        for(int ii = 0; ii < x_minute.size(); ii++)
 		{
 			if(x_minute.at(ii) != i+1)
 			{
@@ -737,14 +731,26 @@ void MainWindow::updateGraphData (void)    //update the graph and output
 		lastValue_C = values_C.last();
 		lastValue_L = values_L.last();
 
-        diff_last = ((float)values_C.last() - (float)values_L.last()) / 2;
-        diff_secondLast = ((float)values_C.at(values_C.length()-2) - (float)values_L.at(values_L.length()-2)) / 2;
-
-        steigung_C = calculatePitch(values_C, x_minute, 30);
-        steigung_L = calculatePitch(values_L, x_minute, 30);
-
-        steigung_C_5min = calculatePitch(values_C, x_minute, 5);
-        steigung_L_5min = calculatePitch(values_L, x_minute, 5);
+        if(values_C.length() >= 30 && values_L.length() >= 30 && x_minute.length() >= 30)
+        {
+            steigung_C = calculatePitch(values_C, x_minute, 30);
+            steigung_L = calculatePitch(values_L, x_minute, 30);
+        }
+        else
+        {
+            steigung_C = calculatePitch(values_C, x_minute, values_C.length());
+            steigung_L = calculatePitch(values_L, x_minute, values_L.length());
+        }
+        if(values_C.length() >= 5 && values_L.length() >= 5 && x_minute.length() >= 5)
+        {
+            steigung_C_5min = calculatePitch(values_C, x_minute, 5);
+            steigung_L_5min = calculatePitch(values_L, x_minute, 5);
+        }
+        else
+        {
+            steigung_C = calculatePitch(values_C, x_minute, values_C.length());
+            steigung_L = calculatePitch(values_L, x_minute, values_L.length());
+        }
 
         if(steigung_C > 0 && steigung_L > 0)
         {
@@ -762,14 +768,12 @@ void MainWindow::updateGraphData (void)    //update the graph and output
         {
             ui->label_prognose->setText("ERROR");
         }
-
 	}
 	else
 	{
 		lastValue_C = 0;
 		lastValue_L = 0;
-	}
-	checkWarnings();
+    }
 
 	//********************************************************************************************************************************
 
@@ -783,29 +787,28 @@ void MainWindow::updateGraphData (void)    //update the graph and output
 	}
 	else
 	{
-		ui->label_value->setText(QString::number((values_C.last()+values_L.last())/2) + QString(" ") +
+        ui->label_value->setText(QString::number((values_C.last()+values_L.last())/2) + QString(" ") +
                                  QChar(0x00B1) + QString(" ")+ QString::number(diff/2)+ QString(" cm"));
 
 	}
 
-	if(timeLastValue < time.addSecs(-300))      //if last value is olde rthan  minutes, mark value in red
+    if(timeLastValue < time.addSecs(-300))      //if last value is olde rthan 5 minutes, mark value in red
 	{
 		QPalette palette = ui->label_value->palette();
-        //palette.setColor(ui->label_value->backgroundRole(), Qt::red);
 		palette.setColor(ui->label_value->foregroundRole(), Qt::red);
         ui->label_value->setPalette(palette);
 	}
 	else
 	{
 		QPalette palette = ui->label_value->palette();
-        //palette.setColor(ui->label_value->backgroundRole(), Qt::black);
 		palette.setColor(ui->label_value->foregroundRole(), Qt::black);
         ui->label_value->setPalette(palette);
 	}
 
 	//write the current value in Label
 
-	if((values_C.size() == 0) || (downloadFail == true) || (values_L.size() == 0))
+    if(values_C.size() == 0 || downloadFail == true || values_L.size() == 0 || openFail == true || invalidCharacter == true || invalidFile == true ||
+            invalidConvert == true )
 	{
 		ui->label_value->setText("ERROR");
 		ui->label_prognose->setText("-");
@@ -815,16 +818,9 @@ void MainWindow::updateGraphData (void)    //update the graph and output
 
 	QString timeLastUpdate;                                                             //Shows the time of the last update
 	timeLastUpdate = QDateTime::currentDateTime().toString("hh:mm:ss");
-
 	ui->label_time->setText(timeLastUpdate);
-
-	//*********************************************************************************************
-
-	if ( openFail==true || invalidCharacter==true || invalidFile==true || invalidConvert==true )
-	{
-		ui->label_value->setText("ERROR");
-	}
-	ui->widget->update();
+    checkWarnings();
+    //*******************************************************************************************************************************
 }
 
 void MainWindow::downlodFromServerFailed(void)
@@ -865,7 +861,7 @@ void MainWindow::deleteOldData (void)
 	{
         QString filename = QString("data_") + date.addDays(-i).toString("yyyy_MM_dd")+QString(".txt");
 		dataNamesSoll.append(filename);
-		//qDebug() << QString("Dateinamen soll") <<dataNamesSoll.at(i);
+        //qDebug() << QString("Dateinamen soll") << dataNamesSoll.at(i);
 	}
 
     for(int i = 0; i<dataNamesIst.size(); i++)
@@ -956,7 +952,7 @@ void MainWindow::on_pushButton_login_clicked(void)
 			{
 				testConnection->Download("test.txt", "ftp://", IP + QString("/hwws/"), L->returnUserName(), L->returnPassword());
 				connect(testConnection, SIGNAL(finished()), this, SLOT(login()));
-				connect(testConnection, SIGNAL(failed()), this, SLOT(LoginFailed()));
+                connect(testConnection, SIGNAL(failed()),   this, SLOT(LoginFailed()));
 			}
 			else
 			{
@@ -972,16 +968,16 @@ void MainWindow::on_pushButton_login_clicked(void)
 	else        //logout
 	{
 		ui->pushButton_login->setText("Anmelden");
-		LoginState = false;
-		updating = false;
+        LoginState =    false;
+        updating =      false;
         settings.setValue("LoginState", LoginState);
         Username.clear();                               //delete global Username
         Password.clear();                               //delete global Password
-        settings.setValue("Username",Username);     //Save this Settings
+        settings.setValue("Username",Username);         //Save this Settings
         settings.setValue("Password", Password);
 
-		location = "unbekannt";
-		version = "unbekannt";
+        location =  "unbekannt";
+        version =   "unbekannt";
 		sensorHeight = 0;
         settings.setValue("SensorHeight", sensorHeight);
         settings.setValue("Version", version);
@@ -1525,10 +1521,10 @@ void MainWindow::on_pushButton_showHeightAsNotification_clicked()
 
 double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute, double numberOfValues)
 {
-    double summe_x = 0;
-    double summe_y = 0;
-    double zaeler = 0;
-    double nenner = 0;
+    double summe_x  = 0;
+    double summe_y  = 0;
+    double zaeler   = 0;
+    double nenner   = 0;
     double steigung = 0;
 
     for(int i = 1; i <= numberOfValues; i++)
@@ -1543,7 +1539,7 @@ double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute, double
         double x_x = x_minute.at(x_minute.length() - i) - (1/numberOfValues * summe_x);
 
         zaeler  = zaeler + (x_x * y_y);
-        nenner = nenner + pow(x_x, 2);
+        nenner  = nenner + pow(x_x, 2);
     }
 
     steigung = (double)zaeler/(double)nenner;
@@ -1552,7 +1548,7 @@ double MainWindow::calculatePitch(QList<int> values, QList<int> x_minute, double
     qDebug() << "summe_x= " << summe_x;
     qDebug() << "zähler = " << zaeler;
     qDebug() << "nenner = " << nenner;
-    qDebug() << "steigung="<< steigung;
+    qDebug() << "steigung=" << steigung;
 
     return steigung;
 }

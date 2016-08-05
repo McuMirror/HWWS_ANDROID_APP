@@ -1,3 +1,17 @@
+/*
+// ****************************************************************************
+// Projekt:          Hochwasser-Warnsystem
+// Compiler:         -
+// Hersteller:       -
+// Autor:            Stefan W.
+// Filename:         dialogwaiting.cpp
+// Zweck:            UI
+//
+// erstellt am:      24.10.2015
+// zuletzt geändert: 24.10.2015
+// ****************************************************************************
+*/
+
 #include "dialogwaiting.h"
 #include "ui_dialogwaiting.h"
 

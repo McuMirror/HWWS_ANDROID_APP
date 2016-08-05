@@ -139,25 +139,13 @@ public class Download_Check_Service extends Service
 
         if((User.length() > 3) && (Password.length() > 3))
         {
-            //MessageNotification.notify(this, "außen", 0, "Bitte Internetverbindung überprüfen");
-            //connection = pingHost(Url, 20, 1000);
-            //MessageNotification.notify(this, Boolean.toString(connection), 0,"nix");
-
-            //connection = Ping.IsReachable(this, "http://www.google.at");
-            //connection = Ping.pingHost("oteloserver.ddns.net", 21, 1000);
-
-             //NewMessageNotification_steady.notify(this, "", 0);
-
             if(connection == true)
             {
-                //MessageNotification.notify(this, "innen", 0, "Bitte Internetverbindung überprüfen");
                 Download(Url + "/hwws", User, Password, FilenameForDownload);   //TODO use another file to save data resources
                 ReadInData("/storage/emulated/0/HWWS/Daten/" + FilenameForDownload);
                 ReadInWarnings("/storage/emulated/0/HWWS/Daten/Warnings.txt");
                 CheckWarnings();
                 WriteWarnings();
-
-                //MessageNotification.notify(this, Boolean.toString(showNotification),0, "t");
 
                 if(showNotification == true)
                 {
@@ -261,7 +249,7 @@ public class Download_Check_Service extends Service
 			   AlreadyTriggered.set(i, true);
 		       }
 		   }
-		   else
+                   else if ((last_Height_L <= WarningHeights.get(i) - 1) && (last_Height_C <= WarningHeights.get(i) - 1))
 		   {
 		       AlreadyTriggered.set(i, false);
 		   }
@@ -277,7 +265,7 @@ public class Download_Check_Service extends Service
 			   AlreadyTriggered.set(i, true);
 		       }
 		   }
-		   else
+                   else if ((last_Height_L >= WarningHeights.get(i) + 1) && (last_Height_C >= WarningHeights.get(i) + 1))
 		   {
 		       AlreadyTriggered.set(i, false);
 		   }
