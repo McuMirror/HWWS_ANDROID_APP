@@ -98,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		socket.connectToHost(IP, 20);		//FTP Port 20
 		if (!socket.waitForConnected(1000))	//check connection to the server
 		{
-			QMessageBox::critical(this, "HWWS", "Es konnte keine Verbindung zum Server hergestellt werden!"
+            QMessageBox::critical(this, "HWWS", "Es konnte keine Verbindung zum Server hergestellt werden!\n"
 												"Bitte überprüfen Sie ihre Internetverbindung ansonsten funktioniert die App nicht");
         }
 	}
@@ -489,8 +489,14 @@ void MainWindow::on_pushButton_add_clicked(void)   //add new warning
     A.setPalette(pal);
 
 	if(A.exec() == QDialog::Accepted)
-	{
-		int rows = ui->tableWidget_Warnings->rowCount();
+    {
+        if(A.getValue() < -sensorHeight || A.getValue() > sensorHeight)
+        {
+            QMessageBox::critical(this, "HWWS", tr("Bitte geben Sie eine gültige 'kritische Höhe' ein! (min: -%1, max: %1)\n"
+                                                   "Der aktuelle Wert kann zu einem nicht Auslösen der Warnung führen!").arg(sensorHeight));
+        }
+
+        int rows = ui->tableWidget_Warnings->rowCount();
 		ui->tableWidget_Warnings->setRowCount(rows+1);             // increase row count
 		ui->tableWidget_Warnings->setColumnCount(2);
 		ui->tableWidget_Warnings->setRowHeight(rows, 60);
@@ -510,16 +516,20 @@ void MainWindow::on_pushButton_add_clicked(void)   //add new warning
 		}
 
 		QTableWidgetItem* valueItem = new QTableWidgetItem(QString::number(A.getValue()) + " " + symb);
-		ui->tableWidget_Warnings->setItem(rows, 1, valueItem);
+        ui->tableWidget_Warnings->setItem(rows, 1, valueItem);
 
-		Warnings.append(new Warning);
-		Warnings.last()->setName(A.getName());
+
+
+        Warnings.append(new Warning);
+        Warnings.last()->setName(A.getName());
 		Warnings.last()->setHeight(A.getValue());
 		Warnings.last()->setStateWarningAtOverUnderheight(A.getStateWarningAtOverUnderheight());
 		//qDebug()<<"new Warning"<< Warnings.last()->getTriggerState();
 
         saveWarningFile();
         ui->label_savedWarnings->setText(QString::number(ui->tableWidget_Warnings->rowCount()));
+
+
 	}
 }
 
@@ -819,6 +829,9 @@ void MainWindow::updateGraphData (void)    //update the graph and output
 	QString timeLastUpdate;                                                             //Shows the time of the last update
 	timeLastUpdate = QDateTime::currentDateTime().toString("hh:mm:ss");
 	ui->label_time->setText(timeLastUpdate);
+
+    ui->widget->update();
+
     checkWarnings();
     //*******************************************************************************************************************************
 }
@@ -1050,6 +1063,12 @@ void MainWindow::on_pushButton_edit_clicked(void)
 
 		if(A.exec() == QDialog::Accepted)
 		{
+            if(A.getValue() < -sensorHeight || A.getValue() > sensorHeight)
+            {
+                QMessageBox::critical(this, "HWWS", tr("Bitte geben Sie eine gültige 'kritische Höhe' ein! (min: -%1, max: %1)\n"
+                                                       "Der aktuelle Wert kann zu einem nicht Auslösen der Warnung führen!").arg(sensorHeight));
+            }
+
 			Warnings.at(index)->setName(A.getName());
 			Warnings.at(index)->setHeight(A.getValue());
 			Warnings.at(index)->setStateWarningAtOverUnderheight(A.getStateWarningAtOverUnderheight());

@@ -55,6 +55,10 @@ public class Download_Check_Service extends Service
 {
     private int last_Height_L = 0;
     private int last_Height_C = 0;
+    private int secondLastHeight_L = 0;
+    private int secondLastHeight_C = 0;
+    private int thirdLastHeight_L = 0;
+    private int thirdLastHeight_C = 0;
     private List<Integer> WarningHeights = new ArrayList<Integer>();
     private List<String> WarningNames = new ArrayList<String>();
     private List<Boolean> AlreadyTriggered = new ArrayList<Boolean>();
@@ -227,8 +231,12 @@ public class Download_Check_Service extends Service
             temperature.add(Integer.parseInt(sl[5].trim()));
         }
 
-        last_Height_C = Height_C.get(Height_C.size()-1);
-        last_Height_L = Height_L.get(Height_L.size()-1);
+	last_Height_C = Height_C.get(Height_C.size() - 1);
+	last_Height_L = Height_L.get(Height_L.size() - 1);
+	secondLastHeight_C = Height_C.get(Height_C.size() - 2);
+	secondLastHeight_L = Height_L.get(Height_L.size() - 2);
+	thirdLastHeight_C  = Height_C.get(Height_C.size() - 3);
+	thirdLastHeight_L  = Height_L.get(Height_L.size() - 3);
     }
 
     private void CheckWarnings()
@@ -240,7 +248,9 @@ public class Download_Check_Service extends Service
            {
 	       if(StateWarningAtOverUnderheight.get(i) == false)
 	       {
-		   if((last_Height_L >= WarningHeights.get(i)) || (last_Height_C >= WarningHeights.get(i)))
+		   if((last_Height_L >= WarningHeights.get(i)) && (secondLastHeight_L >= WarningHeights.get(i)) && (thirdLastHeight_L >= WarningHeights.get(i))
+		   || (last_Height_C >= WarningHeights.get(i)) && (secondLastHeight_C >= WarningHeights.get(i)) && (thirdLastHeight_C >= WarningHeights.get(i))
+		   || (last_Height_C >= WarningHeights.get(i)) && (last_Height_L >= WarningHeights.get(i)))
 		   {
 		       count++;
 		       if(AlreadyTriggered.get(i) == false)
@@ -256,7 +266,9 @@ public class Download_Check_Service extends Service
 	       }
 	       else
 	       {
-		   if((last_Height_L <= WarningHeights.get(i)) || (last_Height_C <= WarningHeights.get(i)))
+		   if((last_Height_L <= WarningHeights.get(i)) && (secondLastHeight_L <= WarningHeights.get(i)) && (thirdLastHeight_L <= WarningHeights.get(i))
+		   || (last_Height_C <= WarningHeights.get(i)) && (secondLastHeight_C <= WarningHeights.get(i)) && (thirdLastHeight_C <= WarningHeights.get(i))
+		   || (last_Height_C <= WarningHeights.get(i)) && (last_Height_L <= WarningHeights.get(i)))
 		   {
 		       count++;
 		       if(AlreadyTriggered.get(i) == false)
