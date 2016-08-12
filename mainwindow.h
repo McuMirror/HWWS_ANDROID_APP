@@ -74,9 +74,9 @@ private slots:
     void writeTableWidgetWarnings(void);
     void checkWarningAttentions(void);
     void save_safty_diff(void);
-    void on_comboBox_attentionBandwidth_currentIndexChanged(int index); 
     void on_pushButton_showHeightAsNotification_clicked();
     double calculatePitch(QList<int> values, QList<int> x_minute, double numberOfValues);
+	void on_spinBox_attentionDiff_editingFinished();
 
 private:
     Ui::MainWindow *ui;
@@ -92,6 +92,8 @@ private:
     int temp_last_value;
 	int sensorHeight;
     int safety_diff = 5;
+	int screenWidth;
+	int screenHeight;
 
     QSettings settings;
 

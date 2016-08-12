@@ -16,6 +16,7 @@
 #include "ui_dialogfirstuse.h"
 
 #include <QString>
+#include <QScreen>
 
 DialogFirstUse::DialogFirstUse(QWidget *parent) :
     QDialog(parent),
@@ -27,8 +28,12 @@ DialogFirstUse::DialogFirstUse(QWidget *parent) :
 	ui->textBrowser->setStyleSheet(style);
 	ui->textBrowser->setReadOnly(true);
 
+	QScreen *screen = QApplication::screens().at(0);
+	//int screenWidth = screen->availableSize().width();
+	int screenHeight = screen->availableSize().height();
+
     ui->pushButton_accept->setText("Akzeptieren / OK");
-    ui->pushButton_accept->setMaximumHeight(65);
+	ui->pushButton_accept->setMaximumHeight(screenHeight / 20);
 
 	ui->textBrowser->setText("!!! ACHTUNG !!! \nDaten sind ohne Gewähr \nMit dem Verwenden dieser App nehmen sie die unten "
 							 "bereitgestellten Informationen zur Kenntnis"                         //short description

@@ -17,6 +17,7 @@
 
 #include <QString>
 #include <QMessageBox>
+#include <QScreen>
 
 addWarningWindow::addWarningWindow(QWidget *parent) :
 	QDialog(parent),
@@ -24,11 +25,15 @@ addWarningWindow::addWarningWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	QScreen *screen = QApplication::screens().at(0);
+	//int screenWidth = screen->availableSize().width();
+	int screenHeight = screen->availableSize().height();
+
 	//writing the labels
     QFont defaultHeight;
-    defaultHeight.setPointSize(20);
+	defaultHeight.setPointSize(screenHeight / 60);
 
-    #define ButtonHeight 65
+	int ButtonHeight = screenHeight / 20;
 
 	ui->label_name->setText("Name:");
     ui->label_name->setFont(defaultHeight);

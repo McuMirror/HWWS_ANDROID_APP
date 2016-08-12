@@ -20,6 +20,7 @@
 #include <QSettings>
 #include <QPushButton>
 #include <QString>
+#include <QScreen>
 
 
 LoginDialog::LoginDialog(QWidget *parent) :
@@ -28,10 +29,14 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QFont defaultHeight;
-    defaultHeight.setPointSize(20);
+	QScreen *screen = QApplication::screens().at(0);
+	//int screenWidth = screen->availableSize().width();
+	int screenHeight = screen->availableSize().height();
 
-    #define ButtonHeight 65
+    QFont defaultHeight;
+	defaultHeight.setPointSize(screenHeight / 60);
+
+	int ButtonHeight = screenHeight / 20;
 
     ui->label_User->setText("Benutzername:");
     ui->label_User->setFont(defaultHeight);
@@ -50,7 +55,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->label_headline->setAlignment(Qt::AlignCenter);
     QFont font = ui->label_headline->font();                                        //Set layout of label
     font.setBold(true);
-    font.setPointSize(20);
+	font.setPointSize(screenHeight / 60);
     ui->label_headline->setFont(font);
     ui->label_headline->setText("HWWS Login");
 
