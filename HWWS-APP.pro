@@ -59,5 +59,6 @@ OTHER_FILES += \
 RESOURCES +=
 
 DISTFILES += \
-            android-sources/src/org/qtproject/example/notification/Ping.java
+            android-sources/src/org/qtproject/example/notification/Ping.java \
+	    LICENSE.md
 
