@@ -131,7 +131,7 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 	p.setPen(missingValuesPen);                 //draw missing values
     for(int i = 0; i < missingValues.size(); i++)
 	{
-		p.drawLine(missingValues.at(i), 0, missingValues.at(i), rect().height());
+		p.drawLine(missingValues.at(i)*2, 0, missingValues.at(i)*2, rect().height());
 	}
 
 	if(showBand == true)
@@ -142,7 +142,7 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 			int y1 = k * values_C.at(i)+d;
 			int y2 = k * values_L.at(i)+d;
 
-			p.drawLine(x_minute.at(i), y1, x_minute.at(i), y2);
+			p.drawLine(x_minute.at(i)*2, y1, x_minute.at(i)*2, y2);
 		}
 	}
 
