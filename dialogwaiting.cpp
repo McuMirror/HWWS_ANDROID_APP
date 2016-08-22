@@ -25,12 +25,12 @@ DialogWaiting::DialogWaiting(QWidget *parent) :
 {
     ui->setupUi(this);
 
-	QScreen *screen = QApplication::screens().at(0);
+	//QScreen *screen = QApplication::screens().at(0);
 	//int screenWidth = screen->availableSize().width();
-	int screenHeight = screen->availableSize().height();
+	//int screenHeight = screen->availableSize().height();
 
     QFont defaultHeight;
-	defaultHeight.setPointSize(screenHeight / 60);
+	defaultHeight.setPointSize(18);
 
     ui->label->setText("Bitte Warten: Daten werden geladen");
     ui->label->setFont(defaultHeight);

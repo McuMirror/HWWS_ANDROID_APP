@@ -134,10 +134,10 @@ void MainWindow::makeLayout(void)
 	qDebug()<<"Method: MakeLayout";
 
 	QFont defaultHeight;
-	defaultHeight.setPointSize(-1 + screenHeight / 60);
+	defaultHeight.setPointSize(18);
 	QFont headline;
 	headline.setBold(true);
-	headline.setPointSize(screenHeight / 60);
+	headline.setPointSize(24);
 
 	int ButtonHeight	= screenHeight / 20;
 	int MaxHeight		= screenHeight / 30;
@@ -287,7 +287,7 @@ void MainWindow::makeLayout(void)
 	ui->tableWidget_attention->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 	QFont font = ui->label_value->font();                                        //Set layout of label
-	font.setPointSize(screenHeight / 22);                                                       //set text height
+	font.setPointSize(60);                                                       //set text height
 	font.setBold(true);
 	//ui->label_value->setAlignment(Qt::AlignCenter);
 	ui->label_value->setFont(font);

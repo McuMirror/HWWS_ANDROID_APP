@@ -34,7 +34,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
 	int screenHeight = screen->availableSize().height();
 
     QFont defaultHeight;
-	defaultHeight.setPointSize(screenHeight / 60);
+	defaultHeight.setPointSize(18);
 
 	int ButtonHeight = screenHeight / 20;
 

@@ -29,9 +29,9 @@ addWarningWindow::addWarningWindow(QWidget *parent) :
 	//int screenWidth = screen->availableSize().width();
 	int screenHeight = screen->availableSize().height();
 
-	//writing the labels
+
     QFont defaultHeight;
-	defaultHeight.setPointSize(screenHeight / 60);
+	defaultHeight.setPointSize(20);
 
 	int ButtonHeight = screenHeight / 20;
 

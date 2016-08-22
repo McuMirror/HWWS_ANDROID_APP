@@ -33,7 +33,7 @@
 graph::graph(QWidget *parent) :
 	QWidget(parent)
 {
-	setFixedWidth(1440);
+	setFixedWidth(1440*2);
 }
 
 void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
@@ -112,7 +112,7 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 
 	for(int z=0; z<values_C.size(); z++)
 	{
-		x = x_minute.at(z);
+		x = x_minute.at(z)*2;
 		y = k * values_C.at(z) + d;
 
 		line_C.append(QPoint(x, y));
@@ -120,7 +120,7 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 
 	for(int u=0; u<values_L.size(); u++)
 	{
-		x = x_minute.at(u);
+		x = x_minute.at(u)*2;
         y = k * values_L.at(u) + d;
 
 		line_L.append(QPoint(x, y));
@@ -231,7 +231,7 @@ void graph::paintEvent(QPaintEvent* event)  //Draw the diagramm
 void graph::setDays(int days)               //set the with of the graph for the number of shown days
 {
 	this->days=days;
-	setFixedWidth(1440*days);
+	setFixedWidth(1440*days*2);
 }
 
 void graph::updateGraph(QList<int> x_minute, QList<int> values_C, QList<int> values_L, QList<QDate> dates, QList<int> missingValues, QList<int> WarningValues, bool showWarningValues, bool showBand)
