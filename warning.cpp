@@ -33,6 +33,11 @@ void Warning::setTriggerState(bool triggered)
 	this->triggered = triggered;
 }
 
+void Warning::setEditable(bool editable)
+{
+	this->editable = editable;
+}
+
 QString Warning::getName(void)
 {
 	return Name;
@@ -56,4 +61,9 @@ void Warning::setStateWarningAtOverUnderheight(bool StateWarningAtOverUnderheigh
 bool Warning::getStateWarningAtOverUnderheight(void)
 {
 	return StateWarningAtOverUnderheight;
+}
+
+bool Warning::getEditable(void)
+{
+	return editable;
 }

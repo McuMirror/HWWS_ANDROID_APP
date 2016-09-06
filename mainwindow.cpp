@@ -137,7 +137,7 @@ void MainWindow::makeLayout(void)
 	defaultHeight.setPointSize(18);
 	QFont headline;
 	headline.setBold(true);
-	headline.setPointSize(24);
+	headline.setPointSize(20);
 
 	int ButtonHeight	= screenHeight / 20;
 	int MaxHeight		= screenHeight / 30;
@@ -531,12 +531,12 @@ void MainWindow::on_pushButton_add_clicked(void)   //add new warning
 		QTableWidgetItem* valueItem = new QTableWidgetItem(QString::number(A.getValue()) + " " + symb);
 		ui->tableWidget_Warnings->setItem(rows, 1, valueItem);
 
-
-
 		Warnings.append(new Warning);
 		Warnings.last()->setName(A.getName());
 		Warnings.last()->setHeight(A.getValue());
 		Warnings.last()->setStateWarningAtOverUnderheight(A.getStateWarningAtOverUnderheight());
+		Warnings.last()->setEditable(true);
+		editables.append(true);
 		//qDebug()<<"new Warning"<< Warnings.last()->getTriggerState();
 
 		saveWarningFile();
@@ -1071,46 +1071,53 @@ void MainWindow::on_pushButton_edit_clicked(void)
 		int index = ui->tableWidget_Warnings->currentRow();
 		qDebug()<<"TableWidget Index"<<index;
 
-		addWarningWindow A;
-		A.setFixedWidth(screenWidth);
-		A.setGeometry(0, 0,screenWidth, screenHeight/3);
-		QPalette pal;
-		pal.setColor(QPalette::Background, Qt::green);
-		A.setPalette(pal);
-		A.setData(Warnings.at(index)->getName(), Warnings.at(index)->getHeight(), Warnings.at(index)->getStateWarningAtOverUnderheight());
-
-		if(A.exec() == QDialog::Accepted)
+		if(editables.at(index) == true)
 		{
-			if(A.getValue() < -sensorHeight || A.getValue() > sensorHeight)
+			addWarningWindow A;
+			A.setFixedWidth(screenWidth);
+			A.setGeometry(0, 0,screenWidth, screenHeight/3);
+			QPalette pal;
+			pal.setColor(QPalette::Background, Qt::green);
+			A.setPalette(pal);
+			A.setData(Warnings.at(index)->getName(), Warnings.at(index)->getHeight(), Warnings.at(index)->getStateWarningAtOverUnderheight());
+
+			if(A.exec() == QDialog::Accepted)
 			{
-				QMessageBox::critical(this, "HWWS", tr("Bitte geben Sie eine gültige 'kritische Höhe' ein! (min: -%1, max: %1)\n"
-													   "Der aktuelle Wert kann zu einem nicht Auslösen der Warnung führen!").arg(sensorHeight));
+				if(A.getValue() < -sensorHeight || A.getValue() > sensorHeight)
+				{
+					QMessageBox::critical(this, "HWWS", tr("Bitte geben Sie eine gültige 'kritische Höhe' ein! (min: -%1, max: %1)\n"
+														   "Der aktuelle Wert kann zu einem nicht Auslösen der Warnung führen!").arg(sensorHeight));
+				}
+
+				Warnings.at(index)->setName(A.getName());
+				Warnings.at(index)->setHeight(A.getValue());
+				Warnings.at(index)->setStateWarningAtOverUnderheight(A.getStateWarningAtOverUnderheight());
+
+				QTableWidgetItem* nameItem = new QTableWidgetItem(A.getName());
+				ui->tableWidget_Warnings->setItem(index, 0, nameItem);
+
+				QChar symb;
+				if(A.getStateWarningAtOverUnderheight() == false)
+				{
+					symb = QChar(0x2191);
+				}
+				else
+				{
+					symb = QChar(0x2193);
+				}
+
+				QTableWidgetItem* valueItem = new QTableWidgetItem(QString::number(A.getValue()) + " " + symb);
+				ui->tableWidget_Warnings->setItem(index, 1, valueItem);
+
+				Warnings.at(index)->setTriggerState(false);
+
+				//saveWarnings();
+				saveWarningFile();
 			}
-
-			Warnings.at(index)->setName(A.getName());
-			Warnings.at(index)->setHeight(A.getValue());
-			Warnings.at(index)->setStateWarningAtOverUnderheight(A.getStateWarningAtOverUnderheight());
-
-			QTableWidgetItem* nameItem = new QTableWidgetItem(A.getName());
-			ui->tableWidget_Warnings->setItem(index, 0, nameItem);
-
-			QChar symb;
-			if(A.getStateWarningAtOverUnderheight() == false)
-			{
-				symb = QChar(0x2191);
-			}
-			else
-			{
-				symb = QChar(0x2193);
-			}
-
-			QTableWidgetItem* valueItem = new QTableWidgetItem(QString::number(A.getValue()) + " " + symb);
-			ui->tableWidget_Warnings->setItem(index, 1, valueItem);
-
-			Warnings.at(index)->setTriggerState(false);
-
-			//saveWarnings();
-			saveWarningFile();
+		}
+		else
+		{
+			QMessageBox::critical(this, "HWWS", "Sie dürfen diese Warnung nicht bearbeiten");
 		}
 	}
 }
@@ -1229,9 +1236,19 @@ void MainWindow::saveWarningFile(void)
 				StateOverUnderHeight = "false";
 			}
 
+			QString Editable;
+			if(Warnings.at(i)->getEditable())
+			{
+				Editable = "true";
+			}
+			else
+			{
+				Editable = "false";
+			}
+
 			qDebug()<< Warnings.at(i)->getTriggerState();
 			out << Warnings.at(i)->getName() << ":" << Warnings.at(i)->getHeight() << ":" << Triggered << ":" <<
-				   StateOverUnderHeight + QString("\n");
+				   StateOverUnderHeight << ":" << Editable + QString("\n");
 		}
 	}
 
@@ -1255,7 +1272,7 @@ void MainWindow::readWarningFile(void)
 	{
 		QString line = in.readLine();
 		QStringList sl = line.split(QChar(':'));
-		if(sl.length() != 4)         //if there is no data then ERROR
+		if(sl.length() != 5)         //if there is no data then ERROR
 		{
 			QMessageBox::critical(this, "HWWS", "ERROR: Warnungen konnten nicht geladen werden");
 		}
@@ -1281,6 +1298,15 @@ void MainWindow::readWarningFile(void)
 			else
 			{
 				Warnings.last()->setStateWarningAtOverUnderheight(false);
+			}
+
+			if(sl.at(4) == "true")
+			{
+				Warnings.last()->setEditable(true);
+			}
+			else
+			{
+				Warnings.last()->setEditable(false);
 			}
 		}
 	}
@@ -1379,6 +1405,17 @@ void MainWindow::writeTableWidgetWarnings(void)
 
 		QTableWidgetItem* valueItem = new QTableWidgetItem(QString::number(Warnings.at(i)->getHeight()) + " " + symb);
 		ui->tableWidget_Warnings->setItem(rows, 1, valueItem);
+
+		if(Warnings.at(i)->getEditable() == true)
+		{
+			editables.append(true);
+		}
+		else
+		{
+			editables.append(false);
+		}
+
+
 	}
 	disconnect(this, SIGNAL(readingFinished()), this, SLOT(writeTableWidgetWarnings()));
 	DW->close();

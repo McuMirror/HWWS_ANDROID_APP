@@ -99,6 +99,7 @@ private:
 
 	QList<int> WarningHeights;          //Warning value
 	QList<Warning*> Warnings;
+	QList<bool> editables;
 
 	bool downloadFail = false;
     bool LoginState;

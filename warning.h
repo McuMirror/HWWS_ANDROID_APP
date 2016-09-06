@@ -22,23 +22,25 @@ class Warning
 {
 public:
 
-    Warning();
+	Warning();
 	void setName(QString Name);
 	void setHeight(int height);
 	void setTriggerState(bool triggered);
 	void setStateWarningAtOverUnderheight(bool StateWarningAtOverUnderheight);
+	void setEditable(bool editable);
 
 	QString getName(void);
 	int getHeight(void);
 	bool getTriggerState(void);
 	bool getStateWarningAtOverUnderheight(void);
-
+	bool getEditable(void);
 private:
 
-    QString Name;
+	QString Name;
 	int height;
 	bool triggered = false;
 	bool StateWarningAtOverUnderheight;
+	bool editable;
 
 };
 

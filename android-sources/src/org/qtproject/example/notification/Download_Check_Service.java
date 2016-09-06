@@ -59,10 +59,13 @@ public class Download_Check_Service extends Service
     private int secondLastHeight_C = 0;
     private int thirdLastHeight_L = 0;
     private int thirdLastHeight_C = 0;
+    private int hour_last = 0;
+    private int minute_last = 0;
     private List<Integer> WarningHeights = new ArrayList<Integer>();
-    private List<String> WarningNames = new ArrayList<String>();
+    private List<String>  WarningNames = new ArrayList<String>();
     private List<Boolean> AlreadyTriggered = new ArrayList<Boolean>();
     private List<Boolean> StateWarningAtOverUnderheight = new ArrayList<Boolean>();
+    private List<Boolean> editables = new ArrayList<Boolean>();
 
     static boolean connection = true;
     private Thread.UncaughtExceptionHandler onRuntimeError = new Thread.UncaughtExceptionHandler()
@@ -153,7 +156,7 @@ public class Download_Check_Service extends Service
 
                 if(showNotification == true)
                 {
-                    NewMessageNotification_steady.notify(this, "Läuft... " + String.valueOf((last_Height_C + last_Height_L) / 2)
+		    NewMessageNotification_steady.notify(this, hour_last + ":" + minute_last + " --> " + String.valueOf((last_Height_C + last_Height_L) / 2)
                     + " " + "\u00B1" + " " + String.valueOf((Math.abs(last_Height_C-last_Height_L)/2)) + " cm", 0);
                 }
                 else
@@ -197,11 +200,11 @@ public class Download_Check_Service extends Service
 
     private void ReadInData(String Path_filename)
     {
-        List<String> records = new ArrayList<String>();
-        List<Integer> hours = new ArrayList<Integer>();
-        List<Integer> minutes = new ArrayList<Integer>();
-        List<Integer> Height_L = new ArrayList<Integer>();
-        List<Integer> Height_C = new ArrayList<Integer>();
+	List<String> records =	    new ArrayList<String>();
+	List<Integer> hours =	    new ArrayList<Integer>();
+	List<Integer> minutes =	    new ArrayList<Integer>();
+	List<Integer> Height_L =    new ArrayList<Integer>();
+	List<Integer> Height_C =    new ArrayList<Integer>();
         List<Integer> temperature = new ArrayList<Integer>();
 
         try
@@ -230,6 +233,9 @@ public class Download_Check_Service extends Service
             Height_L.add(Integer.parseInt(sl[4].trim()));
             temperature.add(Integer.parseInt(sl[5].trim()));
         }
+
+	hour_last = hours.get(hours.size() - 1);
+	minute_last = minutes.get(minutes.size() - 1);
 
 	last_Height_C = Height_C.get(Height_C.size() - 1);
 	last_Height_L = Height_L.get(Height_L.size() - 1);
@@ -310,6 +316,7 @@ public class Download_Check_Service extends Service
         WarningHeights.clear();
         AlreadyTriggered.clear();
         StateWarningAtOverUnderheight.clear();
+	editables.clear();
 
         for(int i=0; i<records.size(); i++)
         {
@@ -319,6 +326,7 @@ public class Download_Check_Service extends Service
             WarningHeights.add(Integer.parseInt((sl[1].trim())));
             AlreadyTriggered.add(Boolean.parseBoolean(sl[2]));
 	    StateWarningAtOverUnderheight.add(Boolean.parseBoolean(sl[3]));
+	    editables.add(Boolean.parseBoolean(sl[4]));
         }
     }
 
@@ -370,9 +378,9 @@ public class Download_Check_Service extends Service
 
                 for(int i=0; i<WarningHeights.size(); i++)
                 {
-                    String WarningData = "%s:%s:%s:%s";
+		    String WarningData = "%s:%s:%s:%s:%s";
                     WarningData = String.format(WarningData, WarningNames.get(i), WarningHeights.get(i).toString(),
-                    AlreadyTriggered.get(i).toString(), StateWarningAtOverUnderheight.get(i).toString());
+		    AlreadyTriggered.get(i).toString(), StateWarningAtOverUnderheight.get(i).toString(), editables.get(i).toString());
 
                     byte[] WarningDataInBytes = WarningData.getBytes();
                     fop.write(WarningDataInBytes);
