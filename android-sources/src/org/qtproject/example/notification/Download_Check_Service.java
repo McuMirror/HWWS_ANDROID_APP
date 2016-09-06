@@ -156,7 +156,8 @@ public class Download_Check_Service extends Service
 
                 if(showNotification == true)
                 {
-		    NewMessageNotification_steady.notify(this, hour_last + ":" + minute_last + " --> " + String.valueOf((last_Height_C + last_Height_L) / 2)
+		    NewMessageNotification_steady.notify(this, String.format("%02d", hour_last) + ":" + String.format("%02d", minute_last) +
+		    " --> " + String.valueOf((last_Height_C + last_Height_L) / 2)
                     + " " + "\u00B1" + " " + String.valueOf((Math.abs(last_Height_C-last_Height_L)/2)) + " cm", 0);
                 }
                 else
@@ -200,12 +201,19 @@ public class Download_Check_Service extends Service
 
     private void ReadInData(String Path_filename)
     {
-	List<String> records =	    new ArrayList<String>();
+	List<String>  records =	    new ArrayList<String>();
 	List<Integer> hours =	    new ArrayList<Integer>();
 	List<Integer> minutes =	    new ArrayList<Integer>();
 	List<Integer> Height_L =    new ArrayList<Integer>();
 	List<Integer> Height_C =    new ArrayList<Integer>();
         List<Integer> temperature = new ArrayList<Integer>();
+
+	hours.clear();
+	minutes.clear();
+	records.clear();
+	Height_L.clear();
+	Height_C.clear();
+	temperature.clear();
 
         try
         {
