@@ -549,17 +549,25 @@ void MainWindow::on_pushButton_delete_clicked(void)  //delete marked warning
 	if((ui->tableWidget_Warnings->rowCount() != 0) && (ui->tableWidget_Warnings->selectedItems().size()==1))
 	{
 		int indexDelete = ui->tableWidget_Warnings->currentRow();
-		QTableWidgetItem* ToDelete = ui->tableWidget_Warnings->item(indexDelete, 0);
-		QString nameToDelete = ToDelete->text();        //name of door
-
-		if(QMessageBox::question(this, tr("Warnung löschen"), tr("Wollen Sie die Warnung %1 wirklich löschen?").arg(nameToDelete)) == QMessageBox::Yes)
+		if(editables.at(indexDelete) == true)
 		{
-			ui->tableWidget_Warnings->removeRow(ui->tableWidget_Warnings->currentRow());          //remove from QTableWidget
-			qDebug()<<"delete Warning: "<< Warnings.at(indexDelete)->getName();
-			Warnings.removeAt(indexDelete);
+
+			QTableWidgetItem* ToDelete = ui->tableWidget_Warnings->item(indexDelete, 0);
+			QString nameToDelete = ToDelete->text();        //name of door
+
+			if(QMessageBox::question(this, tr("Warnung löschen"), tr("Wollen Sie die Warnung %1 wirklich löschen?").arg(nameToDelete)) == QMessageBox::Yes)
+			{
+				ui->tableWidget_Warnings->removeRow(ui->tableWidget_Warnings->currentRow());          //remove from QTableWidget
+				qDebug()<<"delete Warning: "<< Warnings.at(indexDelete)->getName();
+				Warnings.removeAt(indexDelete);
+			}
+			//saveWarnings();
+			saveWarningFile();
 		}
-		//saveWarnings();
-		saveWarningFile();
+		else
+		{
+			QMessageBox::critical(this, "HWWS", "Sie dürfen diese Warnung nicht löschen!");
+		}
 	}
 }
 

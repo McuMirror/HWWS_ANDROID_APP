@@ -135,6 +135,8 @@ public class Download_Check_Service extends Service
         int day = Date.get(Calendar.DAY_OF_MONTH);
         int year = Date.get(Calendar.YEAR);
         int month = Date.get(Calendar.MONTH) + 1;
+	hour_last = 0;
+	minute_last = 0;
 
         DecimalFormat df = new DecimalFormat("00");
         String FilenameForDownload = "data_%s_%s_%s.txt";
@@ -149,6 +151,7 @@ public class Download_Check_Service extends Service
             if(connection == true)
             {
                 Download(Url + "/hwws", User, Password, FilenameForDownload);   //TODO use another file to save data resources
+
                 ReadInData("/storage/emulated/0/HWWS/Daten/" + FilenameForDownload);
                 ReadInWarnings("/storage/emulated/0/HWWS/Daten/Warnings.txt");
                 CheckWarnings();
