@@ -159,6 +159,7 @@ public class Download_Check_Service extends Service
 
                 if(showNotification == true)
                 {
+		    NewMessageNotification_steady.cancel(this);
 		    NewMessageNotification_steady.notify(this, String.format("%02d", hour_last) + ":" + String.format("%02d", minute_last) +
 		    " --> " + String.valueOf((last_Height_C + last_Height_L) / 2)
                     + " " + "\u00B1" + " " + String.valueOf((Math.abs(last_Height_C-last_Height_L)/2)) + " cm", 0);
@@ -168,6 +169,15 @@ public class Download_Check_Service extends Service
                     NewMessageNotification_steady.cancel(this);
                 }
 
+		Calendar cal = new GregorianCalendar();
+		cal.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
+		int current_hour = cal.get(Calendar.HOUR_OF_DAY);
+		int current_minute = cal.get(Calendar.MINUTE);
+
+		if(current_hour > hour_last + 1 || current_minute > minute_last + 5)
+		{
+		    MessageNotification.notify(this, "Achtung: Daten sind nicht aktuell!", 0, "möglicherweise werden keine Warnungen gesendet!");
+		}
             }
             else
             {
