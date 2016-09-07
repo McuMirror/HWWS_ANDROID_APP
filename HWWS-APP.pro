@@ -60,5 +60,6 @@ RESOURCES +=
 
 DISTFILES += \
             android-sources/src/org/qtproject/example/notification/Ping.java \
-	    LICENSE.md
+	    LICENSE.md \
+    LICENSE.md
 
